@@ -1,0 +1,28 @@
+grpc:
+  host: "0.0.0.0"
+  port: 50051
+
+logging:
+  level: "debug"                # Уровень логирования: debug, info, warn, error
+  format: "json"                # Формат логов: text, json
+  output_file: ""               # Файл для записи логов (пусто для вывода в консоль)
+  kafka_topic: ""
+  kafka_broker: ""
+
+database:
+  dsn: postgres://postgres:postgres@localhost:5432/gw-exchanger?sslmode=disable
+  migrate_path: file:///app/internal/app/repository/migrations
+
+redis:
+  addr: "localhost:6379"
+  password: "your_secure_password"
+  db: 0
+
+auth:
+  public_key: internal/certs/jwt-public.pem
+  private_key: internal/certs/jwt-private.pem
+  access_token_ttl: 20s  #24h
+  refresh_token_ttl: 40s  #720h
+
+
+# Приоритет подгрузки переменных - .env!
