@@ -1,4 +1,6 @@
 /.idea
+/test_postgres_data
+/graduation
 
 # git rm -r --cached .idea
 # git commit -m "Удалил папку .idea из репозитория и добавил её в .gitignore"
