@@ -2,10 +2,10 @@ package grpc_delivery
 
 import (
 	"context"
-	"fmt"
 
 	exch "github.com/AndrewTarev/proto-repo/gen/exchange"
 
+	"gw-exchanger/internal/errs"
 	"gw-exchanger/internal/service"
 )
 
@@ -49,7 +49,7 @@ func (h *ExchangerHandler) GetExchangeRateForCurrency(ctx context.Context, req *
 	// Находим нужный курс
 	rate, ok := rates.Rates[req.ToCurrency]
 	if !ok {
-		return nil, fmt.Errorf("currency not found: %s", req.ToCurrency)
+		return nil, errs.ErrUnsupportedOutputCur
 	}
 
 	return &exch.ExchangeRateResponse{

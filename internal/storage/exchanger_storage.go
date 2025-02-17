@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
@@ -25,17 +24,17 @@ func NewExchanger(db *pgxpool.Pool) *Exchanger {
 }
 
 // Поддерживаемые валюты
-var supportedCurrencies = map[string]bool{
-	"USD": true,
-	"RUB": true,
-	"EUR": true,
+var supportedCurrencies = map[string]struct{}{
+	"USD": {},
+	"RUB": {},
+	"EUR": {},
 }
 
 func (e *Exchanger) GetExchangeRates(ctx context.Context, baseCurrency string) (models.ExchangeRateResponse, error) {
 	// Проверяем, поддерживается ли запрашиваемая валюта
 	baseCurrency = strings.ToUpper(baseCurrency)
 	if _, ok := supportedCurrencies[baseCurrency]; !ok {
-		return models.ExchangeRateResponse{}, fmt.Errorf("unsupported currency: %s", baseCurrency)
+		return models.ExchangeRateResponse{}, errs.ErrUnsupportedInputCurr
 	}
 
 	query := `

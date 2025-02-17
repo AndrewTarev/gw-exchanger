@@ -10,7 +10,6 @@ import (
 
 type ExchangerStorage interface {
 	GetExchangeRates(ctx context.Context, baseCurrency string) (models.ExchangeRateResponse, error)
-	// CurrencyExchange()
 }
 
 type Storage struct {

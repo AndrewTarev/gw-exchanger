@@ -10,13 +10,11 @@ import (
 	"time"
 
 	grpcMiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	grpcRecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/sirupsen/logrus"
 
 	config "gw-exchanger/internal/config"
 	"gw-exchanger/internal/delivery/grpc_delivery"
-
-	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus"
+	"gw-exchanger/internal/delivery/grpc_delivery/middleware"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -38,8 +36,8 @@ func RunGRPCServer(ctx context.Context, svc *service.Service, cfg *config.Config
 	// Создаем gRPC сервер с middleware
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(grpcMiddleware.ChainUnaryServer(
-			grpc_logrus.UnaryServerInterceptor(logrus.NewEntry(logger)), // Логирование запросов
-			grpcRecovery.UnaryServerInterceptor(),                       // Обработка паники
+			middleware.UnaryErrorInterceptor(logger), // Обработка ошибок
+			middleware.RecoveryInterceptor(logger),   // Обработка паники
 		)),
 	)
 

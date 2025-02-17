@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/IBM/sarama"
@@ -81,10 +82,17 @@ func (h *StackTraceHook) Levels() []logrus.Level {
 }
 
 func (h *StackTraceHook) Fire(entry *logrus.Entry) error {
-	if err, ok := entry.Data["error"].(error); ok {
-		entry.Data["stack_trace"] = errors.WithStack(err).Error()
+	// Если в логах уже есть stack trace — ничего не делаем
+	if _, exists := entry.Data["stack_trace"]; !exists {
+		entry.Data["stack_trace"] = GetStackTrace()
 	}
 	return nil
+}
+
+func GetStackTrace() string {
+	buf := make([]byte, 1024)
+	n := runtime.Stack(buf, false)
+	return string(buf[:n])
 }
 
 // newKafkaProducer - инициализация Kafka producer
