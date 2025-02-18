@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${DATABASE_DBNAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_DBNAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - my_network
+
+  app:
+    build:
+      context: ./
+    ports:
+      - "50051:50051"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - my_network
+    entrypoint: [ "./main" ]
+
+  migrate:
+    image: migrate/migrate
+    volumes:
+      - ./migrations:/migrations
+    command: [ "-path", "/migrations", "-database", "${DATABASE_DSN}", "up" ]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - my_network
+
+
+networks:
+  my_network:
+    driver: bridge

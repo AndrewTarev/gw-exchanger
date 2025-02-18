@@ -2,18 +2,16 @@ package db
 
 import (
 	"context"
-	"errors"
 	"time"
 
-	"github.com/golang-migrate/migrate/v4"
 	"github.com/jackc/pgx/v5/pgxpool"
-	logger "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
-func ConnectPostgres(dsn string) (*pgxpool.Pool, error) {
+func ConnectPostgres(dsn string, logger *logrus.Logger) (*pgxpool.Pool, error) {
 	// Настраиваем контекст для подключения
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -44,20 +42,4 @@ func ConnectPostgres(dsn string) (*pgxpool.Pool, error) {
 
 	logger.Debug("Successfully connected to PostgreSQL")
 	return pool, nil
-}
-
-func ApplyMigrations(dsn string, migratePath string) {
-	m, err := migrate.New(
-		migratePath,
-		dsn,
-	)
-	if err != nil {
-		logger.Fatalf("Could not initialize migrate: %v", err)
-	}
-
-	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
-		logger.Fatalf("Could not apply migrations: %v", err)
-	}
-
-	logger.Debug("Migrations applied successfully!")
 }

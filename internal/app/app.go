@@ -21,15 +21,11 @@ func StartApplication(cfg *config.Config, logger *logrus.Logger) error {
 	defer cancel()
 
 	// Подключение к базе данных
-	dbConn, err := db.ConnectPostgres(cfg.Database.Dsn)
+	dbConn, err := db.ConnectPostgres(cfg.Database.Dsn, logger)
 	if err != nil {
-		logger.Fatalf("❌ Database connection failed: %v", err)
 		return err
 	}
 	defer dbConn.Close()
-
-	// Запускаем миграции
-	// db.ApplyMigrations(cfg.Database.Dsn, cfg.Database.MigratePath)
 
 	// Создаем зависимости
 	repo := storage.NewStorage(dbConn)
