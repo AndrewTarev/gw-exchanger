@@ -11,6 +11,5 @@ logging:
 
 database:
   dsn: postgres://postgres:postgres@localhost:5432/gw-exchanger?sslmode=disable
-  migrate_path: file:///app/internal/app/repository/migrations
 
 # Приоритет подгрузки переменных - .env!

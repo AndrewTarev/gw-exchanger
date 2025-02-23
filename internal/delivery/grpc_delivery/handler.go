@@ -2,6 +2,7 @@ package grpc_delivery
 
 import (
 	"context"
+	"strings"
 
 	exch "github.com/AndrewTarev/proto-repo/gen/exchange"
 
@@ -47,7 +48,7 @@ func (h *ExchangerHandler) GetExchangeRateForCurrency(ctx context.Context, req *
 	}
 
 	// Находим нужный курс
-	rate, ok := rates.Rates[req.ToCurrency]
+	rate, ok := rates.Rates[strings.ToUpper(req.ToCurrency)]
 	if !ok {
 		return nil, errs.ErrUnsupportedOutputCur
 	}
